@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preposition Adventure</title>
+
+<style>
+:root {
+  --green: #245b3e;
+  --green-2: #dff0d4;
+  --cream: #f7faef;
+  --ink: #20352a;
+  --muted: #637367;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(180deg, #edf8e7, #fffdf6);
+}
+
+header {
+  background: var(--green);
+  color: white;
+  padding: 28px 18px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+}
+
+header p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+main {
+  width: min(1000px, 94%);
+  margin: 22px auto 40px;
+}
+
+.welcome {
+  background: var(--green-2);
+  border: 2px solid #c7e5bb;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.welcome h2 {
+  margin: 0 0 8px;
+  color: var(--green);
+}
+
+.welcome p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.section-title {
+  margin: 24px 0 8px;
+  color: var(--green);
+}
+
+.helper {
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.prep-card {
+  appearance: none;
+  border: 2px solid #d8e5d2;
+  border-radius: 14px;
+  padding: 15px 10px;
+  background: white;
+  color: var(--green);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  font-size: 1rem;
+  min-height: 70px;
+  box-shadow: 0 3px 0 #e3eadf;
+  transition: transform .15s, background .15s, border-color .15s;
+}
+
+.prep-card:hover,
+.prep-card:focus-visible {
+  transform: translateY(-2px);
+  background: var(--green-2);
+  border-color: #80b879;
+}
+
+.prep-card small {
+  display: block;
+  font-size: .75rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+/* POPUP OVERLAY */
+.popup {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 18px;
+  background: rgba(0, 0, 0, .7);
+  justify-content: center;
+  align-items: center;
+}
+
+.popup.show {
+  display: flex;
+}
+
+/* POPUP CONTENT */
+.popup-content {
+  position: relative;
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  background: white;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 12px 40px #0004;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: #edf2e9;
+  color: var(--green);
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.popup-content h2 {
+  color: var(--green);
+  margin: 5px 40px 12px;
+  font-size: 1.7rem;
+}
+
+.meaning {
+  line-height: 1.6;
+}
+
+.example {
+  font-weight: 800;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.popup-image {
+  display: block;
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: var(--cream);
+}
+
+.image-placeholder {
+  padding: 28px 15px;
+  background: var(--cream);
+  border: 2px dashed #a9c99c;
+  border-radius: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: .85rem;
+  padding: 10px 16px 28px;
+}
+
+@media (max-width: 600px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .prep-card {
+    font-size: .92rem;
+    padding: 13px 7px;
+  }
+
+  .popup-content {
+    padding: 20px 15px;
+  }
+
+  .popup-image {
+    max-height: 55vh;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌿 Preposition Adventure</h1>
+  <p>Learn • Explore • Play</p>
+</header>
+
+<main>
+  <section class="welcome">
+    <h2>Hi, little explorer! Ready to learn?</h2>
+    <p>
+      Learn where things are by exploring the nine prepositions.
+      Click each card to see a picture and an example.
+    </p>
+  </section>
+
+  <h2 class="section-title">1. Learn the Prepositions</h2>
+  <p class="helper">Click any card to open its picture.</p>
+
+  <section class="cards" id="cards"
+           aria-label="Preposition cards"></section>
+</main>
+
+<!-- POPUP -->
+<div class="popup" id="imagePopup"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="popupTitle">
+
+  <div class="popup-content">
+    <button class="close-btn" id="closeButton"
+            type="button" aria-label="Close popup">
+      &times;
+    </button>
+
+    <h2 id="popupTitle"></h2>
+    <p class="meaning" id="popupMeaning"></p>
+    <div id="popupImageArea"></div>
+  </div>
+</div>
+
+<footer>
+  Made for Year 4 English learners · Preposition Adventure
+</footer>
+
+<script>
+/*
+  IMAGE SETUP
+
+  Create a folder called "images" beside this HTML file.
+
+  Put your nine images in that folder.
+  Change the image paths below if your filenames differ.
+*/
+
+const lessons = [
+  {
+    word: "ON",
+    meaning: "Something is touching the top of another thing.",
+    image: "on.jpg"
+  },
+  {
+    word: "IN",
+    meaning: "Something is inside another thing.",
+    image: "in.jpg"
+  },
+
+  {
+    word: "ABOVE",
+    meaning: "Something is higher than another thing.",
+    image: "above.jpg"
+  },
+  {
+    word: "UNDER",
+    meaning: "Something is below another thing.",
+    image: "under.jpg"
+  },
+  {
+    word: "INSIDE",
+    meaning: "Something is within a space or container.",
+    image: "inside.jpg"
+  },
+  {
+    word: "IN FRONT OF",
+    meaning: "Something is positioned in front of another thing.",
+    image: "in front of.jpg"
+  },
+  {
+    word: "BEHIND",
+    meaning: "Something is at the back of another thing.",
+    image: "behind.jpg"
+  },
+  {
+    word: "BETWEEN",
+    meaning: "Something is in the middle of two things.",
+    image: "between.jpg"
+  },
+  {
+    word: "NEXT TO",
+    meaning: "Something is beside another thing.",
+    image: "next to.jpg"
+  }
+];
+
+const cards = document.getElementById("cards");
+const popup = document.getElementById("imagePopup");
+const popupTitle = document.getElementById("popupTitle");
+const popupMeaning = document.getElementById("popupMeaning");
+const popupImageArea = document.getElementById("popupImageArea");
+const closeButton = document.getElementById("closeButton");
+
+/* CREATE THE NINE CARDS */
+lessons.forEach((lesson) => {
+  const button = document.createElement("button");
+
+  button.type = "button";
+  button.className = "prep-card";
+
+  button.innerHTML =
+    `${lesson.word}<small>Tap to learn</small>`;
+
+  button.addEventListener("click", () => {
+    openPopup(lesson);
+  });
+
+  cards.appendChild(button);
+});
+
+/* OPEN THE POPUP */
+function openPopup(lesson) {
+  popupTitle.textContent = lesson.word;
+  popupMeaning.textContent = lesson.meaning;
+
+  // Remove the previous picture.
+  popupImageArea.innerHTML = "";
+
+  // Display the selected preposition's picture.
+  const image = document.createElement("img");
+
+  image.className = "popup-image";
+  image.alt = "Picture showing " + lesson.word.toLowerCase();
+
+  image.onerror = function () {
+    const placeholder = document.createElement("div");
+    placeholder.className = "image-placeholder";
+
+    const message = document.createElement("p");
+    message.textContent =
+      "Your image has not been found. Check the filename and image path.";
+
+    const path = document.createElement("code");
+    path.textContent = lesson.image;
+
+    placeholder.appendChild(message);
+    placeholder.appendChild(path);
+
+    popupImageArea.replaceChildren(placeholder);
+  };
+
+  image.src = lesson.image;
+  popupImageArea.appendChild(image);
+
+  popup.classList.add("show");
+  document.body.style.overflow = "hidden";
+  closeButton.focus();
+}
+
+/* CLOSE THE POPUP */
+function closePopup() {
+  popup.classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+/* CLOSE BUTTON */
+closeButton.addEventListener("click", closePopup);
+
+/* CLICK OUTSIDE THE POPUP CONTENT */
+popup.addEventListener("click", function (event) {
+  if (event.target === popup) {
+    closePopup();
+  }
+});
+
+/* ESCAPE KEY */
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Escape" && popup.classList.contains("show")) {
+    closePopup();
+  }
+});
+</script>
+
+</body>
+</html>
